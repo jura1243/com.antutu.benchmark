@@ -2,7 +2,7 @@
 
 pkgname=com.antutu.benchmark
 pkgver=1.0.0.591
-pkgrel=4
+pkgrel=5
 pkgdesc="安兔兔评测 for linux
  安兔兔评测（AnTuTu）是一款跨平台，支持手机、电脑设备的专业性能评定软件。Linux 版本的安兔兔支持一键跑分，可评估 CPU/GPU/MEM/UX 性能。"
 arch=("x86_64")
@@ -40,6 +40,10 @@ package(){
 
 export LD_LIBRARY_PATH=/opt/antutu:$LD_LIBRARY_PATH
 export LANG=en_US.UTF-8
+
+# Force X11 backend to avoid Wayland plugin issues
+export QT_QPA_PLATFORM=xcb
+export QT_QPA_PLATFORMTHEME=gtk3
 
 # Function to detect and run on discrete GPU
 run_with_dgpu() {

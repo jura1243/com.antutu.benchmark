@@ -252,6 +252,21 @@ export LANG=en_US.UTF-8
 
 **Solution:** Fixed path from `/opt/antutu//bin/benchmark` to `/opt/antutu/bin/benchmark`.
 
+### 4. Wayland/Qt Platform Fix
+
+**Problem:** Qt application fails to start on Wayland systems with error:
+```
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
+```
+
+**Solution:** The wrapper script forces X11 backend by setting environment variables:
+```bash
+export QT_QPA_PLATFORM=xcb
+export QT_QPA_PLATFORMTHEME=gtk3
+```
+
+This ensures the application uses X11 (XCB) instead of Wayland, which is more stable for this application.
+
 ## Troubleshooting
 
 ### Application Doesn't Start from Menu
@@ -359,6 +374,7 @@ The original `.deb` package is downloaded from the official AnTuTu website: http
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.0.0.591-5 | 2026-03-13 | Fixed Wayland Qt platform plugin issue (force X11 backend) |
 | 1.0.0.591-4 | 2026-03-13 | Added discrete GPU support (NVIDIA/AMD hybrid graphics) |
 | 1.0.0.591-3 | 2026-03-13 | Added English language support, fixed desktop paths |
 | 1.0.0.591-2 | 2026-03-13 | Fixed desktop entry paths |

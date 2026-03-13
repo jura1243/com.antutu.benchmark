@@ -7,7 +7,7 @@ index original..modified 100644
  pkgname=com.antutu.benchmark
  pkgver=1.0.0.591
 -pkgrel=1
-+pkgrel=4
++pkgrel=5
  pkgdesc="安兔兔评测 for linux
   安兔兔评测（AnTuTu）是一款跨平台，支持手机、电脑设备的专业性能评定软件。Linux 版本的安兔兔支持一键跑分，可评估 CPU/GPU/MEM/UX 性能。"
  arch=("x86_64")
@@ -32,7 +32,7 @@ index original..modified 100644
  
  }
  
-@@ -29,12 +34,78 @@ package(){
+@@ -29,12 +34,82 @@ package(){
      mkdir -p ${pkgdir}/usr/share/
      mv opt/apps/${pkgname}/entries/*  ${pkgdir}/usr/share/
  
@@ -41,6 +41,10 @@ index original..modified 100644
  
  export LD_LIBRARY_PATH=/opt/antutu:$LD_LIBRARY_PATH
 +export LANG=en_US.UTF-8
++
++# Force X11 backend to avoid Wayland plugin issues
++export QT_QPA_PLATFORM=xcb
++export QT_QPA_PLATFORMTHEME=gtk3
 +
 +# Function to detect and run on discrete GPU
 +run_with_dgpu() {
@@ -59,9 +63,9 @@ index original..modified 100644
 +            return $?
 +        fi
 +        # Fallback: set environment variables manually
-+            echo "Running on NVIDIA GPU with manual configuration..."
-+            __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only /opt/antutu/bin/benchmark -start "$1"
-+            return $?
++        echo "Running on NVIDIA GPU with manual configuration..."
++        __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only /opt/antutu/bin/benchmark -start "$1"
++        return $?
 +    fi
 +    
 +    # Check for AMD GPU (via DRI_PRIME)

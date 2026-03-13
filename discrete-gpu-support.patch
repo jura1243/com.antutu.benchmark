@@ -2,7 +2,7 @@ diff --git a/opt/antutu/start.sh b/opt/antutu/start.sh
 index original..modified 100755
 --- a/opt/antutu/start.sh
 +++ b/opt/antutu/start.sh
-@@ -1,6 +1,72 @@
+@@ -1,6 +1,76 @@
  #!/bin/bash
  
 +# AnTuTu Benchmark Launcher Script
@@ -10,7 +10,10 @@ index original..modified 100755
 +
  export LD_LIBRARY_PATH=/opt/antutu:$LD_LIBRARY_PATH
  export LANG=en_US.UTF-8
--/opt/antutu/bin/benchmark -start $1
++
++# Force X11 backend to avoid Wayland plugin issues
++export QT_QPA_PLATFORM=xcb
++export QT_QPA_PLATFORMTHEME=gtk3
 +
 +# Function to detect and run on discrete GPU
 +run_with_dgpu() {
@@ -79,3 +82,4 @@ index original..modified 100755
 +        fi
 +        ;;
 +esac
+-/opt/antutu/bin/benchmark -start $1
