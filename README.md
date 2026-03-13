@@ -88,25 +88,75 @@ antutu
 /opt/antutu/bin/benchmark --colortest
 ```
 
-## Language Settings
+## Language Settings / Языковые настройки
 
-The application automatically determines the interface language based on your system locale:
+The application automatically determines the interface language based on your system locale.
 
-- **Chinese locale** → Chinese interface
+**Default behavior:**
+- **Chinese locale (zh_CN, zh_TW, zh_HK)** → Chinese interface
 - **Any other locale** → English interface (default)
 
-The wrapper script explicitly sets `LANG=en_US.UTF-8` to ensure the English interface is used.
+The wrapper script detects your system language and uses the appropriate interface.
+
+### Supported Languages
+
+| Language | Code | Interface | Qt Translations |
+|----------|------|-----------|-----------------|
+| English | en | ✅ Full | ✅ |
+| Chinese (Simplified) | zh_CN | ✅ Full | ✅ |
+| Chinese (Traditional) | zh_TW | ⚠️ Partial | ✅ |
+| Russian | ru | ⚠️ English | ✅ |
+| German | de | ⚠️ English | ✅ |
+| French | fr | ⚠️ English | ✅ |
+| Spanish | es | ⚠️ English | ✅ |
+| Italian | it | ⚠️ English | ✅ |
+| Japanese | ja | ⚠️ English | ✅ |
+| Korean | ko | ⚠️ English | ✅ |
+| Polish | pl | ⚠️ English | ✅ |
+| Ukrainian | uk | ⚠️ English | ✅ |
+
+**Legend:**
+- ✅ Full — Full interface support
+- ⚠️ Partial — English interface with Qt translations for system elements
 
 ### Changing Language
 
-To run with a different locale:
+#### Method 1: Environment Variable (Recommended)
 
 ```bash
-# Run with Chinese interface (if available)
+# Run with Chinese interface
+ANTUTU_LANG=zh antutu
+
+# Run with Traditional Chinese interface
+ANTUTU_LANG=zh_TW antutu
+
+# Run with English interface (default)
+ANTUTU_LANG=en antutu
+
+# Run with Russian locale (English interface + Russian Qt translations)
+ANTUTU_LANG=ru antutu
+```
+
+#### Method 2: System Locale
+
+```bash
+# Run with Chinese interface (if system locale is Chinese)
 LANG=zh_CN.UTF-8 antutu
 
-# Run with Russian locale (will use English interface)
+# Run with Russian locale (will use English interface + Russian Qt translations)
 LANG=ru_RU.UTF-8 antutu
+
+# Run with German locale (will use English interface + German Qt translations)
+LANG=de_DE.UTF-8 antutu
+```
+
+#### Method 3: Command Line Override
+
+The launcher automatically detects your system locale. You can also override it:
+
+```bash
+# Check current language detection
+antutu --help
 ```
 
 ## Discrete GPU Support
@@ -374,6 +424,7 @@ The original `.deb` package is downloaded from the official AnTuTu website: http
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.0.0.591-6 | 2026-03-13 | Added multi-language support based on system locale |
 | 1.0.0.591-5 | 2026-03-13 | Fixed Wayland Qt platform plugin issue (force X11 backend) |
 | 1.0.0.591-4 | 2026-03-13 | Added discrete GPU support (NVIDIA/AMD hybrid graphics) |
 | 1.0.0.591-3 | 2026-03-13 | Added English language support, fixed desktop paths |

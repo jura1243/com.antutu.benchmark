@@ -2,7 +2,7 @@
 
 pkgname=com.antutu.benchmark
 pkgver=1.0.0.591
-pkgrel=5
+pkgrel=6
 pkgdesc="安兔兔评测 for linux
  安兔兔评测（AnTuTu）是一款跨平台，支持手机、电脑设备的专业性能评定软件。Linux 版本的安兔兔支持一键跑分，可评估 CPU/GPU/MEM/UX 性能。"
 arch=("x86_64")
@@ -37,13 +37,68 @@ package(){
 
 # AnTuTu Benchmark Launcher Script
 # Supports hybrid graphics (NVIDIA Optimus / AMD Switchable Graphics)
+# Supports multiple languages based on system locale
 
 export LD_LIBRARY_PATH=/opt/antutu:$LD_LIBRARY_PATH
-export LANG=en_US.UTF-8
 
 # Force X11 backend to avoid Wayland plugin issues
 export QT_QPA_PLATFORM=xcb
 export QT_QPA_PLATFORMTHEME=gtk3
+
+# Determine language based on system locale
+# Default is English, but will use Chinese if system locale is Chinese
+determine_language() {
+    # Get system locale (handle both LANG and LC_ALL)
+    local sys_lang="${LC_ALL:-$LANG}"
+    
+    # Extract language code (e.g., en_US.UTF-8 -> en)
+    local lang_code="${sys_lang%%_*}"
+    lang_code="${lang_code%%.*}"
+    
+    # Set locale based on language
+    case "$lang_code" in
+        zh|zh_CN)
+            # Simplified Chinese
+            export LANG=zh_CN.UTF-8
+            echo "Using Chinese (Simplified) interface..."
+            ;;
+        zh_TW|zh_HK)
+            # Traditional Chinese
+            export LANG=zh_TW.UTF-8
+            echo "Using Chinese (Traditional) interface..."
+            ;;
+        ru)
+            # Russian - use English interface with Russian Qt translations
+            export LANG=en_US.UTF-8
+            export QT_QPA_PLATFORMTRANSLATIONS=/opt/antutu/translations
+            echo "Using English interface (Russian Qt translations available)..."
+            ;;
+        de|fr|es|it|ja|ko|pl|uk)
+            # Other supported Qt languages - use English interface
+            export LANG=en_US.UTF-8
+            export QT_QPA_PLATFORMTRANSLATIONS=/opt/antutu/translations
+            echo "Using English interface ($lang_code Qt translations available)..."
+            ;;
+        *)
+            # Default: English
+            export LANG=en_US.UTF-8
+            echo "Using English interface (default)..."
+            ;;
+    esac
+}
+
+# Determine language unless overridden by environment variable
+if [ -z "$ANTUTU_LANG" ]; then
+    determine_language
+else
+    # User specified language override
+    case "$ANTUTU_LANG" in
+        zh|zh_CN) export LANG=zh_CN.UTF-8 ;;
+        zh_TW|zh_HK) export LANG=zh_TW.UTF-8 ;;
+        *) export LANG=en_US.UTF-8 ;;
+    esac
+    echo "Using language override: $LANG"
+fi
 
 # Function to detect and run on discrete GPU
 run_with_dgpu() {
