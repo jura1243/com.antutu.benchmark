@@ -16,6 +16,7 @@
 - ✅ 3D graphics performance test
 - ✅ English interface support
 - ✅ Proper desktop menu integration
+- ✅ Hybrid graphics support (NVIDIA Optimus / AMD Switchable)
 
 ## Installation
 
@@ -106,6 +107,95 @@ LANG=zh_CN.UTF-8 antutu
 
 # Run with Russian locale (will use English interface)
 LANG=ru_RU.UTF-8 antutu
+```
+
+## Discrete GPU Support
+
+For laptops with hybrid graphics (NVIDIA Optimus or AMD Switchable Graphics), the launcher script supports running the benchmark on the discrete GPU for better performance.
+
+### Using Command Line Options
+
+```bash
+# Run on discrete GPU
+antutu --dgpu
+
+# Or use short option
+antutu -d
+
+# Run specific test on discrete GPU
+antutu --dgpu --solidtest
+```
+
+### Using Environment Variable
+
+```bash
+# Force use of discrete GPU
+ANTOTU_USE_DGPU=1 antutu
+```
+
+### Supported Technologies
+
+The launcher automatically detects and uses the appropriate method for your system:
+
+| Technology | Package Required | Command |
+|------------|------------------|---------|
+| **NVIDIA Prime** | `nvidia-prime` | `prime-run` or environment variables |
+| **NVIDIA Bumblebee** | `bumblebee`, `primus` | `primusrun` |
+| **AMD Switchable** | `mesa-utils` | `DRI_PRIME=1` |
+
+### Manual Configuration
+
+If automatic detection doesn't work, you can manually set environment variables:
+
+**For NVIDIA GPUs:**
+```bash
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only antutu
+```
+
+**For AMD GPUs:**
+```bash
+DRI_PRIME=1 antutu
+```
+
+### Checking GPU Usage
+
+To verify which GPU is being used:
+
+```bash
+# Check NVIDIA GPU usage
+nvidia-smi
+
+# Check OpenGL renderer
+glxinfo | grep "OpenGL renderer"
+
+# Run with verbose output
+antutu --dgpu
+```
+
+### Help
+
+```bash
+antutu --help
+```
+
+Example output:
+```
+AnTuTu Benchmark Launcher
+
+Usage:
+  antutu [OPTIONS] [ARGS]
+
+Options:
+  -d, --dgpu, --discrete-gpu  Run on discrete GPU (NVIDIA/AMD)
+  -h, --help                  Show this help message
+
+Environment Variables:
+  ANTOTU_USE_DGPU=1           Force use of discrete GPU
+
+Examples:
+  antutu                      Run with default settings
+  antutu --dgpu               Run on discrete GPU
+  antutu --dgpu --solidtest   Run solid test on discrete GPU
 ```
 
 ## Package Contents
@@ -269,6 +359,7 @@ The original `.deb` package is downloaded from the official AnTuTu website: http
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.0.0.591-4 | 2026-03-13 | Added discrete GPU support (NVIDIA/AMD hybrid graphics) |
 | 1.0.0.591-3 | 2026-03-13 | Added English language support, fixed desktop paths |
 | 1.0.0.591-2 | 2026-03-13 | Fixed desktop entry paths |
 | 1.0.0.591-1 | 2026-03-13 | Initial release for Arch Linux |
